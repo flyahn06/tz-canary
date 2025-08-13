@@ -1,0 +1,3 @@
+[submodule "gcc"]
+	path = gcc
+	url = https://github.com/flyahn06/tz-gcc
