@@ -46,18 +46,21 @@ cd gcc/build/gcc
 ./xgcc -B"$(pwd)/" -O0 -S ../test.c -o ../test.s -fstack-protector-strong -fstack-protector-tee
 ```
 
-You are expected to see __`stack_chk_guard_tee` being called in the function prologue and epilogue.
+You are expected to see `__stack_chk_guard_tee` being called in the function prologue and epilogue.
+
+> Note: this feature is being developed currently.
 
 ```nasm
 ; test.s
 ...
 main:
     ...
-	movq	__stack_chk_guard_tee(%rip), %rax
+	call	__stack_chk_guard_tee
 	movq	%rax, -8(%rbp)
 	...
 	movq	-8(%rbp), %rdx
-	subq	__stack_chk_guard_tee(%rip), %rdx
+	call    __stack_chk_guard_tee
+	subq	%rax, %rdx
 	je	.L3
 	call	__stack_chk_fail
 .L3:
@@ -66,3 +69,23 @@ main:
 	ret
 	.cfi_endproc
 ```
+
+### Development Guide
+
+For CLion,
+
+1. Use `bear` to make `compile_commands.json`:
+
+```c
+cd build/
+bear -- make -j$(nproc)
+```
+
+2. Make symbolic link of `compile_commands.json`:
+
+```c
+# Run on build directory
+ln -s compile_commands.json ../compile_commands.json
+```
+
+3. Open `compile_commands.json` to load project.
