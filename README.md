@@ -50,6 +50,9 @@ You are expected to see `__stack_chk_guard_tee` being called in the function pro
 
 > Note: this feature is being developed currently.
 
+- [x] Fully supported on i386 architecture.
+- [ ] Partially supported on Aarch64 architecture.
+
 ```nasm
 ; test.s
 ...
@@ -89,3 +92,16 @@ ln -s compile_commands.json ../compile_commands.json
 ```
 
 3. Open `compile_commands.json` to load project.
+
+## lib
+
+This provides `__stack_protect_guard_tee()` for loading stack canaries from arbitrary location.
+
+### Build
+
+```shell
+gcc -c -o libtee_canary.o libtee_canary.c -fno-stack-protector -O0
+# Link this to target binary
+xgcc -c -o target.o target.c -fstack-protector-strong -fstack-protector-tee
+xgcc -o target target.o libtee_canary.o
+```
